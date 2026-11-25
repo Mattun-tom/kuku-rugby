@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ラグビーくく</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --pitch:#1f7a3a; --pitch-d:#145a2a; --chalk:#fbfaf4; --try:#ffd23f; --ball:#8a4b22; --ng:#e5484d; --ink:#17321f;
+  --r:22px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{
+  font-family:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;font-weight:800;color:var(--ink);
+  background:
+    repeating-linear-gradient(90deg,var(--pitch) 0 56px,#238543 56px 112px);
+  padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0);
+  overflow-x:hidden;
+}
+.wrap{max-width:520px;margin:0 auto;padding:14px 14px 28px;min-height:100%}
+.screen{display:none}.screen.on{display:block}
+h1{margin:6px 0 2px;color:var(--chalk);font-size:34px;font-weight:900;text-align:center;letter-spacing:.04em;text-shadow:0 3px 0 var(--pitch-d)}
+.sub{color:var(--chalk);text-align:center;margin:0 0 14px;font-size:15px;opacity:.95}
+.panel{background:var(--chalk);border-radius:var(--r);padding:14px;margin-bottom:14px;border:3px solid #fff}
+.panel h2{margin:0 0 10px;font-size:17px}
+.zukan{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.logo{aspect-ratio:1;border-radius:16px;background:#e3e6dc;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+.logo img{width:100%;height:100%;object-fit:contain;background:#fff}
+.logo .q{font-size:26px;color:#9aa595}
+.logo.done{background:#fff;box-shadow:inset 0 0 0 3px var(--try)}
+.emb{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;text-align:center;line-height:1.1;padding:4px}
+.danbtns{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.dan{border:0;border-radius:18px;background:var(--pitch);color:#fff;padding:12px 4px 10px;font:inherit;font-size:22px;box-shadow:0 5px 0 var(--pitch-d);cursor:pointer}
+.dan:active{transform:translateY(4px);box-shadow:0 1px 0 var(--pitch-d)}
+.dan small{display:block;font-size:12px;opacity:.9;margin-top:2px}
+.dan:disabled{background:#a9b4a3;box-shadow:0 5px 0 #8a947f;color:#fff}
+.rnd{grid-column:1/-1;background:var(--ball);box-shadow:0 5px 0 #5e3115;font-size:24px}
+.rnd:active{box-shadow:0 1px 0 #5e3115}
+.pips{display:flex;justify-content:center;gap:5px;margin-top:6px}
+.pip{width:15px;height:10px;border-radius:50%;background:rgba(255,255,255,.35)}
+.pip.f{background:var(--try)}
+.mini{display:block;margin:6px auto 0;border:0;background:none;color:var(--chalk);font:inherit;font-size:12px;opacity:.8;text-decoration:underline;cursor:pointer}
+
+/* play */
+.top{display:flex;justify-content:space-between;align-items:center;color:var(--chalk);font-size:17px;margin-bottom:8px}
+.back{border:0;background:rgba(255,255,255,.2);color:#fff;border-radius:12px;padding:6px 12px;font:inherit;font-size:14px}
+.bar{height:16px;border-radius:10px;background:rgba(255,255,255,.3);overflow:hidden;margin-bottom:12px}
+.bar i{display:block;height:100%;width:100%;background:var(--try);border-radius:10px}
+.bar i.low{background:var(--ng)}
+.q-card{background:var(--chalk);border-radius:28px;border:4px solid #fff;text-align:center;padding:18px 8px 14px;position:relative}
+.q-text{font-size:68px;line-height:1;font-weight:900;letter-spacing:.02em}
+.q-text span{color:var(--pitch)}
+.ans{margin:12px auto 0;display:block;width:78%;font:inherit;font-size:54px;text-align:center;border:4px solid var(--pitch);border-radius:18px;padding:2px 0;background:#fff;color:var(--ink);outline:none}
+.ans:focus{border-color:var(--try)}
+.go{margin:12px auto 0;display:block;border:0;border-radius:16px;background:var(--try);color:var(--ink);font:inherit;font-size:22px;padding:8px 36px;box-shadow:0 4px 0 #c79b12}
+.fb{position:absolute;inset:0;border-radius:24px;display:none;align-items:center;justify-content:center;flex-direction:column;font-size:30px;color:#fff}
+.fb.ok{display:flex;background:rgba(31,122,58,.95)}
+.fb.ng{display:flex;background:rgba(229,72,77,.95)}
+.fb b{font-size:84px;line-height:1}
+.dots{display:flex;justify-content:center;gap:6px;margin-top:12px}
+.dots i{width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.3)}
+.dots i.o{background:var(--try)}.dots i.x{background:var(--ng)}
+
+/* result */
+.res{text-align:center}
+.res .big{font-size:40px;font-weight:900;margin:4px 0}
+.res .score{font-size:20px;margin:0 0 10px}
+.reveal{width:min(70vw,260px);margin:10px auto;border-radius:28px;overflow:hidden;background:#fff;aspect-ratio:1;border:5px solid var(--try);animation:drop .9s cubic-bezier(.2,1.4,.4,1) both}
+.reveal .logo{width:100%;height:100%;border-radius:0}
+.reveal .emb{font-size:30px}
+@keyframes drop{0%{transform:translateY(-120%) rotate(-25deg) scale(.5);opacity:0}100%{transform:none;opacity:1}}
+.tname{font-size:20px;margin:6px 0 4px}
+.btn{display:block;width:100%;border:0;border-radius:18px;background:var(--pitch);color:#fff;font:inherit;font-size:22px;padding:14px;margin-top:10px;box-shadow:0 5px 0 var(--pitch-d)}
+.btn.alt{background:var(--try);color:var(--ink);box-shadow:0 5px 0 #c79b12}
+.cheer{font-size:16px;margin:4px 0 0}
+.res .pip{background:#d5dccf;width:20px;height:13px}.res .pip.f{background:var(--try);box-shadow:0 0 0 2px #c79b12}
+@media (prefers-reduced-motion:reduce){.reveal{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<section id="home" class="screen on">
+  <h1>ラグビーくく</h1>
+  <p class="sub">10もんで 9もん せいかいで クリア！</p>
+  <div class="panel">
+    <h2>チームずかん（<span id="cnt">0</span>/12）</h2>
+    <div class="zukan" id="zukan"></div>
+  </div>
+  <div class="panel">
+    <h2>どの「だん」にする？</h2>
+    <div class="danbtns" id="danbtns"></div>
+  </div>
+  <button class="mini" id="reset">さいしょからやりなおす（おうちのひとへ）</button>
+</section>
+
+<section id="play" class="screen">
+  <div class="top"><button class="back" id="quit">やめる</button><span id="ptitle"></span><span id="pscore"></span></div>
+  <div class="bar"><i id="bari"></i></div>
+  <div class="q-card">
+    <div class="q-text" id="qt"></div>
+    <input class="ans" id="ans" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" maxlength="2" aria-label="こたえ">
+    <button class="go" id="go">こたえる</button>
+    <div class="fb" id="fb"></div>
+  </div>
+  <div class="dots" id="dots"></div>
+</section>
+
+<section id="result" class="screen">
+  <div class="panel res" id="resbox"></div>
+</section>
+
+</div>
+
+<script>
+const KEY="rugby_kuku_v1", DAN_CAP=5, RND_CAP=3, LIMIT=10000, NQ=10, PASS=9;
+/* 浦安〜リコー：リーグワン公式サイト（DIVISION 1・2026-27）の順 */
+const S3="https://league-one.s3.ap-northeast-1.amazonaws.com/";
+const TEAMS=[
+ {n:"浦安D-Rocks",k:"D-Rocks",c:"#d6336c",u:"image/menu/3311_200x200_62e4326a516dd.jpg"},
+ {n:"クボタスピアーズ船橋・東京ベイ",k:"スピアーズ",c:"#e8590c",u:"testing_image/team_info/5_200x200_61a5e73d2fe9a.png"},
+ {n:"コベルコ神戸スティーラーズ",k:"スティーラーズ",c:"#c92a2a",u:"testing_image/team_info/6_200x200_61a5e74da146d.png"},
+ {n:"埼玉パナソニックワイルドナイツ",k:"ワイルドナイツ",c:"#1c4fa1",u:"image/team_info/3309_200x200_62df6d0cce7e7.png"},
+ {n:"東京サントリーサンゴリアス",k:"サンゴリアス",c:"#1971c2",u:"testing_image/team_info/11_200x200_61a5e799b8a58.png"},
+ {n:"東芝ブレイブルーパス武蔵",k:"ブレイブルーパス",c:"#e03131",u:"testing_image/team_info/12_200x200_61a5e7aec8aca.png"},
+ {n:"栃木ホンダヒート",k:"ホンダヒート",c:"#d9480f",u:"image/menu/23506_200x200_6a44670a46e38.png"},
+ {n:"トヨタヴェルブリッツ",k:"ヴェルブリッツ",c:"#a61e4d",u:"testing_image/team_info/13_200x200_61a5e7d81568f.png"},
+ {n:"三菱重工相模原ダイナボアーズ",k:"ダイナボアーズ",c:"#2b8a3e",u:"testing_image/team_info/20_200x200_61a5e838a8b8e.png"},
+ {n:"ヤマハ静岡ブルーレヴズ",k:"ブルーレヴズ",c:"#1864ab",u:"testing_image/team_info/10_200x200_61a5e7888e229.png"},
+ {n:"横浜キヤノンイーグルス",k:"イーグルス",c:"#862e9c",u:"testing_image/team_info/8_200x200_61a5e7666bc71.png"},
+ {n:"リコーブラックラムズ東京",k:"ブラックラムズ",c:"#343a40",u:"image/menu/11126_200x200_66aa3ad9701ae.png"}
+];
+/* ロゴ画像：ここを "logos/01.png" のように書き換えると、保存した画像を使えます */
+const logoSrc=(i)=>S3+TEAMS[i].u;
+
+const $=s=>document.querySelector(s);
+let save=load();
+function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&Array.isArray(d.dan)&&d.dan.length===9)return d}catch(e){}return{dan:Array(9).fill(0),rnd:0}}
+function store(){try{localStorage.setItem(KEY,JSON.stringify(save))}catch(e){}}
+const unlocked=i=>i<9?save.dan[i]>=DAN_CAP:save.rnd>=i-8;
+
+/* ---------- sound ---------- */
+let ac=null;
+function tone(f,t0,d,type="sine",v=.18){if(!ac)return;const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(v,ac.currentTime+t0);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+t0+d);o.connect(g);g.connect(ac.destination);o.start(ac.currentTime+t0);o.stop(ac.currentTime+t0+d+.02)}
+const sOk=()=>{tone(784,0,.12);tone(1047,.1,.22)};
+const sNg=()=>{tone(180,0,.3,"sawtooth",.12)};
+const sClear=()=>{[523,659,784,1047,1319].forEach((f,i)=>tone(f,i*.12,.3,"triangle",.2))};
+function wake(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.state==="suspended")ac.resume()}catch(e){}}
+
+/* ---------- logo ---------- */
+function logoHTML(i,locked){
+  if(locked)return `<div class="logo"><span class="q">？</span></div>`;
+  const t=TEAMS[i];
+  return `<div class="logo done"><img src="${logoSrc(i)}" alt="${t.n}" onerror="fb(this,${i})"></div>`;
+}
+window.fb=function(img,i){const t=TEAMS[i];img.parentNode.innerHTML=`<div class="emb" style="background:${t.c}">${t.k}</div>`};
+
+/* ---------- home ---------- */
+function drawHome(){
+  let n=0;$("#zukan").innerHTML=TEAMS.map((_,i)=>{const u=unlocked(i);if(u)n++;return logoHTML(i,!u)}).join("");
+  $("#cnt").textContent=n;
+  let h="";
+  for(let d=1;d<=9;d++){
+    const c=save.dan[d-1],full=c>=DAN_CAP;
+    h+=`<button class="dan" data-d="${d}" ${full?"disabled":""}>${d}のだん<div class="pips">${pips(c,DAN_CAP)}</div></button>`;
+  }
+  const rf=save.rnd>=RND_CAP;
+  h+=`<button class="dan rnd" data-d="0" ${rf?"disabled":""}>ランダム<div class="pips">${pips(save.rnd,RND_CAP)}</div></button>`;
+  $("#danbtns").innerHTML=h;
+}
+const pips=(c,m)=>Array.from({length:m},(_,i)=>`<span class="pip ${i<c?"f":""}"></span>`).join("");
+$("#danbtns").addEventListener("click",e=>{const b=e.target.closest(".dan");if(b&&!b.disabled){wake();start(+b.dataset.d)}});
+$("#reset").onclick=()=>{if(confirm("ぜんぶのきろくを けします。いいですか？")){save={dan:Array(9).fill(0),rnd:0};store();drawHome()}};
+
+/* ---------- play ---------- */
+let mode=0,qs=[],qi=0,ok=0,marks=[],deadline=0,timer=null,locked=false;
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+function makeQs(d){
+  if(d>0){ // 1〜9を1回ずつ＋ランダム1問
+    const m=shuffle([1,2,3,4,5,6,7,8,9]);m.push(1+Math.floor(Math.random()*9));
+    return shuffle(m).map(x=>[d,x]);
+  }
+  const seen=new Set(),r=[];
+  while(r.length<NQ){const a=1+Math.floor(Math.random()*9),b=1+Math.floor(Math.random()*9),k=a+"x"+b;if(!seen.has(k)){seen.add(k);r.push([a,b])}}
+  return r;
+}
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("on",s.id===id));window.scrollTo(0,0)}
+function start(d){
+  mode=d;qs=makeQs(d);qi=0;ok=0;marks=[];
+  $("#ptitle").textContent=d?`${d}のだん`:"ランダム";
+  show("play");next();
+}
+function next(){
+  if(qi>=NQ)return finish();
+  locked=false;const [a,b]=qs[qi];
+  $("#qt").innerHTML=`${a}<span>×</span>${b}`;
+  $("#fb").className="fb";$("#fb").innerHTML="";
+  const inp=$("#ans");inp.value="";inp.focus();
+  $("#pscore").textContent=`${qi+1}/${NQ}もんめ`;
+  $("#dots").innerHTML=Array.from({length:NQ},(_,i)=>`<i class="${marks[i]||""}"></i>`).join("");
+  deadline=performance.now()+LIMIT;
+  clearInterval(timer);tick();timer=setInterval(tick,60);
+}
+function tick(){
+  const left=Math.max(0,deadline-performance.now()),bar=$("#bari");
+  bar.style.width=(left/LIMIT*100)+"%";bar.classList.toggle("low",left<3000);
+  if(left<=0&&!locked)judge(null);
+}
+function judge(v){
+  if(locked)return;locked=true;clearInterval(timer);
+  const [a,b]=qs[qi],ans=a*b,good=(v!==null&&+v===ans);
+  marks[qi]=good?"o":"x";if(good)ok++;
+  const f=$("#fb");
+  if(good){sOk();f.className="fb ok";f.innerHTML=`<b>○</b>せいかい！`}
+  else{sNg();f.className="fb ng";f.innerHTML=`<b>×</b>${a}×${b}＝${ans}`+(v===null?"<div style='font-size:18px'>じかんぎれ</div>":"")}
+  $("#dots").innerHTML=Array.from({length:NQ},(_,i)=>`<i class="${marks[i]||""}"></i>`).join("");
+  setTimeout(()=>{qi++;next()},good?650:1500);
+}
+$("#ans").addEventListener("input",e=>{
+  const el=e.target;el.value=el.value.replace(/[^0-9０-９]/g,c=>/[０-９]/.test(c)?String.fromCharCode(c.charCodeAt(0)-65248):"");
+  if(locked){el.value="";return}
+  const [a,b]=qs[qi];if(el.value.length>=String(a*b).length)judge(el.value);
+});
+$("#ans").addEventListener("keydown",e=>{if(e.key==="Enter")manual()});
+$("#go").onclick=manual;
+function manual(){if(locked)return;const v=$("#ans").value;if(v!=="")judge(v)}
+$("#quit").onclick=()=>{if(confirm("ここでやめる？（きろくにならないよ）")){clearInterval(timer);locked=true;drawHome();show("home")}};
+
+/* ---------- result ---------- */
+function finish(){
+  clearInterval(timer);
+  const clear=ok>=PASS;let newTeam=-1,html="";
+  if(clear){
+    if(mode>0){save.dan[mode-1]++;if(save.dan[mode-1]===DAN_CAP)newTeam=mode-1}
+    else{save.rnd++;newTeam=8+save.rnd}
+    store();sClear();
+  }
+  const cnt=mode>0?save.dan[mode-1]:save.rnd,cap=mode>0?DAN_CAP:RND_CAP;
+  const nm=mode>0?`${mode}のだん`:"ランダム";
+  if(clear){
+    html+=`<div class="big">クリア！</div><p class="score">${ok}もん せいかい</p>`;
+    if(newTeam>=0){
+      html+=`<div class="reveal">${logoHTML(newTeam,false)}</div><p class="tname">${TEAMS[newTeam].n}があらわれた！</p>`;
+    }else{
+      const rest=cap-cnt;
+      html+=`<div class="panel" style="margin:8px 0"><div style="font-size:16px">${nm}のクリア ${cnt}/${cap}</div><div class="pips" style="margin-top:8px">${pips(cnt,cap).replace(/rgba\(255,255,255,.35\)/g,"")}</div></div>`;
+      html+=`<p class="cheer">あと${rest}かいで チームがあらわれるよ！</p>`;
+    }
+  }else{
+    html+=`<div class="big" style="color:var(--ng)">ざんねん…</div><p class="score">${ok}もん せいかい（${PASS}もんで クリア）</p><p class="cheer">もういっかい ちょうせんしよう！</p>`;
+  }
+  const again=(mode>0?save.dan[mode-1]<DAN_CAP:save.rnd<RND_CAP);
+  if(again)html+=`<button class="btn alt" id="again">もういちど（${nm}）</button>`;
+  html+=`<button class="btn" id="home2">ホームにもどる</button>`;
+  $("#resbox").innerHTML=html;show("result");
+  const ag=$("#again");if(ag)ag.onclick=()=>{wake();start(mode)};
+  $("#home2").onclick=()=>{drawHome();show("home")};
+}
+drawHome();
+</script>
+</body>
+</html>
